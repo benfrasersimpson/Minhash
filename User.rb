@@ -39,11 +39,8 @@ module RecommendationEngine
             File.open(file_to_read).each_with_index do |line,index|
                 next if index == 0
                 user_id, product = line.split(';')
-                @users[user_id] << product.to_i
+                @users[user_id.to_i] << product.to_i
             end
-
-            @users.values.each {|u| puts u.to_s}
-
         end
 
         def run
@@ -104,12 +101,12 @@ module RecommendationEngine
                 h3 = lambda {|x| (5 * x) + 3 % 103}
                 h4 = lambda {|x| (7 * x) - 1 % 103}
                 banding_hash = lambda {|x,y=0| ((2 ** x) + 3 ** y) % 103}
-                
+                 
                 user_bandings = user.generate_bandings(banding_hash, h1, h2, h3, h4)
                 user_bandings.each {|banding| @bandings[banding] << user.id }
+                raise "No products!" unless user.products.size > 0
             end
 
-            pp @bandings
 
             @bandings.each do |banding, users|
                 users.each do |user|
@@ -119,21 +116,23 @@ module RecommendationEngine
         end
   
         def get_recommendation(user_id)
+            user = @users[user_id]
             recommendations = Array.new
             return recommendations unless @users[user_id]
+            raise "No products!" unless @users[user_id].products.size > 0
             @users[user_id].bandings.each do |banding|
                 (@bandings[banding] - [user_id]).each do |other_user|
-                    recommendations += (@users[user_id].products - @users[other_user].products)
+                    recommendations += (@users[other_user].products - @users[user_id].products)
                 end
             end
+            return recommendations.uniq
         end
 
         def run
             puts "running"
             generate_bandings
             @users.values.each do |user|
-                puts user.id
-                puts "User ID #{user.id}: #{get_recommendation(user.id).size}"
+                puts "User ID #{user.id}: #{get_recommendation(user.id)}"
             end
         end
     end
