@@ -1,0 +1,17 @@
+= Minhash
+
+== Description
+Implementation of Minhash algorithm as a Recommendation Engine by Ben Simpson
+
+== Usage
+    >> ruby Application.rb --file test/data.txt 
+    Enter User ID to get recommendations, or EOF (CTRL + D) to exit: 0
+    No recommendations
+    Enter a User ID: 1
+    User ID 1 recommendations: 42
+
+== Running Tests
+With Rake
+    rake test
+Without Rake 
+    ruby -r 'minitest/autorun' test/RecommendationEngine_test.rb
